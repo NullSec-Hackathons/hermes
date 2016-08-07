@@ -45,31 +45,68 @@ const requesterModel = mongoose.model('requester',requesterSchema);
 const donorPairModel = mongoose.model('donor_pair',donorPairSchema);
 const requesterPairModel = mongoose.model('requester_pair',requesterPairSchema);
 
-function getDonors(bloodType,disease,organ,res) {
-  donorModel.
-    find({
-      bloodType: bloodType,
-      disease: disease,
-      organ: organ
-    }).exec(function(err,donors){
-      if (err){ throw err; res.send('error');}
-      else {
-        res.send(donors);
-      }
-    });
+function donorCurry(requester){
+  return function(donors){
+    let temp_requester = requester;
+    return function(res){
+      res.render('match',{requester:temp_requester,donors:donors});
+    }
+  }
 }
-function getRequesters(bloodType,disease,organ,res) {
-  requesterModel.
-    find({
-      bloodType: bloodType,
-      disease: disease,
-      organ: organ
-    }).exec(function(err,requesters){
-      if (err){ throw err; res.send('error');}
-      else {
-        res.send(requesters);
-      }
-    });
+
+function getDonors(contact,res) {
+  requesterModel.findOne({contact:contact})
+              .exec(function(err,doc){
+                if(err) res.render('match',{requester:doc,donors:[]});
+                else {
+                var dModelFind = {
+                  bloodType: doc.bloodType,
+                  disease: doc.disease,
+                  organ: doc.organ
+                };
+                var dcurry = donorCurry(doc);
+                donorModel.
+                  find(dModelFind).exec(function(err,donors){
+                    if (err){ throw err; res.send('error');}
+                    else {
+                      dcurry = dcurry(donors);
+                      dcurry(res);
+                    }
+                  });
+                }
+              });
+
+}
+function requesterCurry(donor){
+  return function(requesters){
+    let temp_donor = donor;
+    return function(res){
+      res.render('cardview_requesters',{donor:temp_donor,requesters:requesters});
+    }
+  }
+}
+function getRequesters(contact,res) {
+  console.log("sdfasa");
+  donorModel.findOne({contact:contact})
+              .exec(function(err,doc){
+                if(err){res.render('cardview_requesters',{donor:[],requesters:[]});}
+                else{
+                  var rModelFind = {
+                    bloodType: doc.bloodType,
+                    disease: doc.disease,
+                    organ: doc.organ
+                  };
+                var curry = requesterCurry(doc);
+                requesterModel.
+                  find(rModelFind).exec(function(err,requesters){
+                    if (err){ throw err; res.send('error');}
+                    else {
+                      curry = curry(requesters);
+                      curry(res);
+                    }
+                  });
+                }
+              });
 }
 function addDonor(donor,res){
   let newDonor = new donorModel({

@@ -83,7 +83,8 @@
 					success: function(data)
 					{
 						// show the data you got from B in result div
-						$("#result").css("display","block");
+						console.log("success");
+						window.location.href = "/match/requesters/"+$("#contact").val();
 					}
 				});
 				e.preventDefault(); // avoid to execute the actual submit of the form
@@ -95,7 +96,7 @@
 			<h1>Donors Form</h1>
 			<form name="myform" id="myform" style="color:white;">
 				<input type="text" name="name" placeholder="Name">
-				<input type="text" name="contact" placeholder="Contact">
+				<input type="text" id="contact" name="contact" placeholder="Contact">
 				<input type="text" name="disease" placeholder="Chronic Disease(if any)">
 				<input type="text" name="organ" placeholder="Organ Donating">
 				<select name="bloodType">

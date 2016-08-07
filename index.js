@@ -3,11 +3,13 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+app.set('views', './client');
+app.set('view engine', 'pug');
 app.use('/assets/css',express.static(__dirname + '/client/assets/css'));
 app.use('/assets/fonts',express.static(__dirname + '/client/assets/fonts'));
 app.use('/assets/js',express.static(__dirname + '/client/assets/js'));
 app.use('/assets/img',express.static(__dirname + '/client/assets/img'));
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));//trial
@@ -17,17 +19,29 @@ var db =require('./db');
 app.get('/',(req,res)=>res.sendFile(__dirname+'/client/home.html'));
 //app.get('/match',(req,res)=>{console.log("hello");res.send('asd');});
 
-app.post('/match/donors',(req,res)=>{
+app.post('/match/donors/:contact',(req,res)=>{
   /*console.log("Hello");
   console.log(`${req.body.bloodType}:${req.body.disease}:${req.body.organ}`);
   res.send('OK');*/
-  db.getDonors(req.body.bloodType,req.body.disease,req.body.organ,res);
+  db.getDonors(req.params.contact,res);
 });
-app.post('/match/requesters',(req,res)=>{
+app.get('/match/donors/:contact',(req,res)=>{
   /*console.log("Hello");
   console.log(`${req.body.bloodType}:${req.body.disease}:${req.body.organ}`);
   res.send('OK');*/
-  db.getRequesters(req.body.bloodType,req.body.disease,req.body.organ,res);
+  db.getDonors(req.params.contact,res);
+});
+app.post('/match/requesters/:contact',(req,res)=>{
+  /*console.log("Hello");
+  console.log(`${req.body.bloodType}:${req.body.disease}:${req.body.organ}`);
+  res.send('OK');*/
+  db.getRequesters(req.params.contact,res);
+});
+app.get('/match/requesters/:contact',(req,res)=>{
+  /*console.log("Hello");
+  console.log(`${req.body.bloodType}:${req.body.disease}:${req.body.organ}`);
+  res.send('OK');*/
+  db.getRequesters(parseInt(req.params.contact),res);
 });
 app.post('/add/donor',(req,res)=>{
   console.log("Donor POST");

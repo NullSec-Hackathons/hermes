@@ -26,7 +26,8 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.13.4",
-    "mongoose": "^4.5.8"
+    "mongoose": "^4.5.8",
+    "pug": "^2.0.0-beta4"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
